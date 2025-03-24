@@ -76,15 +76,9 @@ const config = {
           {type: 'doc', docId: 'Testing', label: 'Testing', position: 'left'},
           {type: 'doc', docId: 'Evaluation', label: 'Evaluation', position: 'left'},
           {type: 'doc', docId: 'Appendices', label: 'Appendices', position: 'left'},
-          {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
-            label: 'Tutorial',
-          },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/mahtanikrish/group3',
             label: 'GitHub',
             position: 'right',
           },
@@ -93,15 +87,6 @@ const config = {
       footer: {
         style: 'dark',
         links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Tutorial',
-                to: '/docs/intro',
-              },
-            ],
-          },
           {
             title: 'Community',
             items: [
@@ -128,7 +113,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/mahtanikrish/group3',
               },
             ],
           },

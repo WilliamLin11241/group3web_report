@@ -20,7 +20,6 @@
       type: 'category',
       label: 'HandsUp Report',
       items: [
-        'intro',
         'Requirements', 
       ],
     },
