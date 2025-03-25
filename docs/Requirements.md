@@ -6,7 +6,7 @@
 
 In traditional classroom teaching, teachers rely primarily on observing students’ hands, expressions, or questions to determine students’ level of understanding and engagement. However, this approach has obvious limitations in large classes or online teaching environments. It is difficult for teachers to get real-time feedback from each student, and they may ignore students who are not good at expressing themselves or are introverted, resulting in poor classroom interactions and reduced student engagement and motivation.
 
-To solve this problem, we developed **HandsUp**, a computer vision-based classroom interaction system that automatically detects students’ hand gestures and recognizes the color of the cards in their hands to help teachers understand students’ feedback in real time. Through the visualization of data, teachers can quickly identify which students have questions and which students have already mastered the knowledge, thus effectively improved the quality of classroom interactions and enhanced students’ engagement and learning outcomes.
+To solve this problem, we developed HandsUp, a computer vision-based classroom interaction system that automatically detects students’ hand gestures and recognizes the color of the cards in their hands to help teachers understand students’ feedback in real time. Through the visualization of data, teachers can quickly identify which students have questions and which students have already mastered the knowledge, thus effectively improved the quality of classroom interactions and enhanced students’ engagement and learning outcomes.
 
 ---
 
@@ -28,7 +28,7 @@ To solve this problem, we developed **HandsUp**, a computer vision-based classro
 
 One of the primary goals of our project is to increase inclusivity in classroom environments by supporting non-verbal communication methods. Traditional classroom settings often rely heavily on verbal interactions, which can unintentionally exclude students who face challenges in expressing themselves verbally, such as those with speech impairments, social anxiety, or autism spectrum disorder (ASD).
 
-Our system, **HandsUp**, addresses this issue by enabling students to participate through simple, intuitive non-verbal cues, such as hand gestures and colored cards. This approach ensures that all students, regardless of their communication preferences or abilities, have an equal opportunity to express their understanding, opinions, and questions during lessons. This allows educators to better recognize and respond to every student’s needs, fostering a more inclusive, engaging, and supportive learning environment.
+Our system, HandsUp, addresses this issue by enabling students to participate through simple, intuitive non-verbal cues, such as hand gestures and colored cards. This approach ensures that all students, regardless of their communication preferences or abilities, have an equal opportunity to express their understanding, opinions, and questions during lessons. This allows educators to better recognize and respond to every student’s needs, fostering a more inclusive, engaging, and supportive learning environment.
 
 ### Tech-free learning
 
@@ -90,7 +90,7 @@ Our development process followed an iterative method, where we collected feedbac
     <p><em>Role:</em> Primary School Student with ASD<br/>
     <em>Type:</em> Male, 9 years old</p>
     <blockquote>
-      "I like answering questions, but sometimes I don’t know how to say it. I like using colors to show my answers."
+      "I like answering questions, but sometimes I don't know how to say it. I like using colors to show my answers."
     </blockquote>
 
     <h4>Motivations</h4>
