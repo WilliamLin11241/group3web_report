@@ -1,99 +1,207 @@
-## Research Section
+# Requirements
 
-### Related Projects Review
+## Project background
 
-When building the initial requirements list at the beginning of the project, we began researching online for academic papers and previous projects that could inform our design and implementation. We discovered several similar projects — one of which directly influenced our solution — and we were able to gain valuable insights that helped shape and improve our approach. The main projects we focused on were:
+### Discuss problems
 
-#### Real-Time Application for Detection of Raised Hands and Personal Identification by Deep Learning Algorithms for Camera Images by Atsushi Ogino and Masahiro Tanaka
+In traditional classroom teaching, teachers rely primarily on observing students’ hands, expressions, or questions to determine students’ level of understanding and engagement. However, this approach has obvious limitations in large classes or online teaching environments. It is difficult for teachers to get real-time feedback from each student, and they may ignore students who are not good at expressing themselves or are introverted, resulting in poor classroom interactions and reduced student engagement and motivation.
 
-**1.1 Main Features**
-- Detects raised hands  
-- Applies facial recognition on the person that raises their hand  
-- Automatically calls on students that have raised their hand  
-
-**1.2 What We Can Learn**
-- This project was our introduction to the YOLO (You Only Look Once) model and its limitations, prompting us to explore the improved YOLOv4 for better performance.
-- The idea of creating a region of interest (ROI) relative to the raised hand to locate the face inspired our approach for card detection, where we detect cards relative to the hand’s bounding box.
-
-#### YOLO-Hand-Detection by Florian Bruggisser
-
-**2.1 Main Features**
-- Real-time hand detection using YOLO
-
-**2.2 What We Can Learn**
-- Bruggisser’s hand detection model demonstrated impressive accuracy and is open-source. It includes a version using YOLOv4-Tiny, which is lightweight and ideal for school-grade computers. The project served as a solid foundation and meant that we didn’t need to train a model from scratch.
-- However, it was not a perfect fit for our project. Since Intel is one of our clients, we were required to use OpenVINO which required converting Bruggisser’s darknet model to ONNX, and then into OpenVINO’s IR format using Intel’s documentation. This posed a large issue throughout the majority of our development cycle.
-- Although Bruggisser used multiple datasets to train his model, the training data consisted mostly of hands in awkward angles and the hands of marathon runners. This meant that in certain positions, the model had trouble recognizing a user’s hand. To counter this, we reduced the confidence threshold for our model to 20%, which was low enough to avoid picking up false positives while still correctly identifying hands in a frame.
-- We further developed the code to include bounding box visualization and write hand count data to text files for our application’s backend to process.
+To solve this problem, we developed HandsUp, a computer vision-based classroom interaction system that automatically detects students’ hand gestures and recognizes the color of the cards in their hands to help teachers understand students’ feedback in real time. Through the visualization of data, teachers can quickly identify which students have questions and which students have already mastered the knowledge, thus effectively improved the quality of classroom interactions and enhanced students’ engagement and learning outcomes.
 
 ---
 
-### Technology Review
+## Partner introduction
 
-#### Data Pipeline
+| Partner | Website |
+|--------|---------|
+| ![](/img/NAS_Schools_Logo_Sybil_Elgar_RGB.jpg)<br/>**Sybil Elgar School** | [Sybil Elgar School](https://www.autism.org.uk/our-schools/sybil-elgar) |
+| ![](/img/NAS_Schools_Logo_Helen_Allison_RGB.jpg)<br/>**Helen Allison School** | [Helen Allison School](https://www.autism.org.uk/our-schools/sybil-elgar) |
+| ![](/img/intel.jpg)<br/>**Intel** | [Intel](https://www.intel.com/content/www/us/en/homepage.html) |
+| ![](/img/ucl.png)<br/>**UCL Computer Science** | [UCL Computer Science](https://www.ucl.ac.uk/computer-science/) |
 
-**Advantages**
-
-| Solution     | Advantages                                                                                     |
-|--------------|-----------------------------------------------------------------------------------------------|
-| Text Files   | - Simple implementation  ; - No networking required ; - OS Compatibility without setup ; - Good for decoupling; enables async communication between Python and MFC |
-| Sockets      | - Bi-directional ; - Better synchronization ; - Lower latency                           |
-
-**Disadvantages**
-
-| Solution     | Disadvantages                                                                                  |
-|--------------|-----------------------------------------------------------------------------------------------|
-| Text Files   | - Higher latency, slower file I/O ; - Not scalable; becomes cumbersome with frequent data exchange |
-| Sockets      | - More complex setup ; - Requires networking code ; - Harder to debug due to opacity    |
-
-We decided to use reading and writing to text files as our data pipeline. This is because our application should be designed to work on any Intel-based computer without the need for any additional configuration. Using sockets meant that in some cases there were port conflicts with other apps and added unnecessary overhead for our use case.
-
-Furthermore, using text files meant that we were easily able to manage multiple data streams with ease which was essential as our application works with multiple modes, running states, and both card and hand counting. Text files were a practical and low-maintenance solution. Although text files have a higher latency than sockets, the latency is negligible for our application since in practice the count values don’t change rapidly enough to cause noticeable issues.
 
 ---
 
-#### Card Detection
+## Project goals
 
-**Advantages**
+### Increase inclusivity
 
-| Solution                                                   | Advantages                                                                 |
-|------------------------------------------------------------|-----------------------------------------------------------------------------|
-| HSV detection in ROI above detected hand                   | - Simple implementation ; - Accurate color detection when card is held above the hand |
-| Segment Anything Meta to extract rectangular objects       | - Improved accuracy over first method                                      |
-| Integration of Uno Card Detection in ROI above the hand    | - Most accurate detection of Uno cards ; - Already implemented program  |
+One of the primary goals of our project is to increase inclusivity in classroom environments by supporting non-verbal communication methods. Traditional classroom settings often rely heavily on verbal interactions, which can unintentionally exclude students who face challenges in expressing themselves verbally, such as those with speech impairments, social anxiety, or autism spectrum disorder (ASD).
 
-**Disadvantages**
+Our system, HandsUp, addresses this issue by enabling students to participate through simple, intuitive non-verbal cues, such as hand gestures and colored cards. This approach ensures that all students, regardless of their communication preferences or abilities, have an equal opportunity to express their understanding, opinions, and questions during lessons. This allows educators to better recognize and respond to every student’s needs, fostering a more inclusive, engaging, and supportive learning environment.
 
-| Solution                                                   | Disadvantages                                                               |
-|------------------------------------------------------------|------------------------------------------------------------------------------|
-| HSV detection in ROI above detected hand                   | - Requires cards to be held above hand ; - Can be inaccurate in colorful environments |
-| Segment Anything Meta to extract rectangular objects       | - High resource usage ; - Causes freezing on low-end machines            |
-| Integration of Uno Card Detection in ROI above the hand    | - Less effective at distance ; - Higher latency ; - Difficult to customize ; - Limited to Uno cards |
+### Tech-free learning
 
-We chose HSV detection with a region of interest (ROI) above the detected hand due to its low resource requirements and responsive performance. After calibrating the ROI scaling and applying Gaussian blur, erosion, and dilation, the detection accuracy improved significantly. This solution avoided frame freezing on low-end systems and maintained a clean, responsive UI.
+Our goal is to create a technology-free solution for students, minimizing the need for personal devices like tablets or smartphones. By relying on simple physical cues (e.g., hand gestures and colored cards) and computer technology on the teacher’s side, we ensure that students can engage without distractions or digital barriers. This method promotes accessibility, ease of use while maintaining a natural learning environment.
 
 ---
 
-### Language & Frameworks Review
+## Process of gathering requirements
 
-| Category           | Solutions Considered   | Decision             | Reasoning                                                                 |
-|--------------------|------------------------|----------------------|---------------------------------------------------------------------------|
-| Frontend UI        | Tkinter, MFC           | MFC                  | Chosen for legacy system support (e.g., Windows XP), school compatibility |
-| Model Format       | ONNX, Darknet          | ONNX (converted to IR) | Required for compatibility with OpenVINO                                  |
-| Image Processing   | OpenCV                 | OpenCV               | Well-documented, supports webcam input, efficient image handling          |
-| Programming Language | Python, C++          | Python & C++         | Python for core logic; C++ (with MFC) for frontend and system integration |
-| Compilation Tool   | Nuitka, PyInstaller    | PyInstaller          | Nuitka was used initially, but OpenVINO integration required PyInstaller  |
+### Semi-structured interviews with clients
+
+We conducted meetings and interviews with our clients to understand their specific needs and challenges. These semi-structured interviews allowed us to ask open-ended questions while also gathering specific requirements for the system. Through direct discussions, we gained valuable feedback into how the system could best support teachers and students in real classroom settings.
+
+### Iterative method
+
+Our development process followed an iterative method, where we collected feedback every Friday during our meetings. This continuous feedback loop enabled us to improve our design and the product based on real user needs. By incorporating regular feedback, we ensured that our system developed towards a more effective and user-friendly solution.
 
 ---
 
-### Summary of Technical Decisions
+## Personas
 
-| Technical Problem           | Our Decision                                                  |
-|----------------------------|----------------------------------------------------------------|
-| Languages                  | C++ (with MFC) and Python 3                                    |
-| Inference Engine           | OpenVINO                                                       |
-| Hand Detection Framework   | YOLOv4 Tiny                                                    |
-| Video Processing           | OpenCV                                                         |
-| Colour Detection           | HSV filtering with Gaussian blur, erosion and dilation         |
-| Data Pipeline              | Text files                                                     |
-| Packaging                  | PyInstaller                                                    |
+<div class="persona-container">
+
+  <div class="persona-card">
+    <h3>Daniel Carter</h3>
+    <p><em>Role:</em> Teacher at a Special Education School<br/>
+    <em>Type:</em> Male, 40 years old</p>
+    <blockquote>
+      "I want every student in my class, verbal or non-verbal, to have an equal chance to participate and engage."
+    </blockquote>
+
+    <h4>Motivations</h4>
+    <ul>
+      <li>Ensure all students, including ASD students, can participate in classroom activities.</li>
+      <li>Reduce classroom distractions and make learning more engaging.</li>
+      <li>Find interactive teaching methods that do not solely rely on verbal communication.</li>
+      <li>Use data-driven insights to tailor teaching strategies to students' needs.</li>
+    </ul>
+
+    <h4>Ideal Features</h4>
+    <ul>
+      <li>A system that allows non-verbal students to express themselves easily.</li>
+      <li>A visually engaging and distraction-free interface that suits neurodiverse learners.</li>
+      <li>Real-time analytics to track student engagement and participation.</li>
+      <li>AI-generated voice options for students who struggle with reading or verbalizing their thoughts.</li>
+    </ul>
+
+    <h4>Pain Points</h4>
+    <ul>
+      <li>Traditional classroom engagement methods do not cater to ASD students effectively.</li>
+      <li>Many interactive tools are too complex and overwhelming for neurodiverse learners.</li>
+      <li>Some students have difficulty staying focused when using screens for learning.</li>
+      <li>Limited tools available that offer meaningful interaction without requiring verbal input.</li>
+    </ul>
+  </div>
+
+  <div class="persona-card">
+    <h3>Alex Johnson</h3>
+    <p><em>Role:</em> Primary School Student with ASD<br/>
+    <em>Type:</em> Male, 9 years old</p>
+    <blockquote>
+      "I like answering questions, but sometimes I don't know how to say it. I like using colors to show my answers."
+    </blockquote>
+
+    <h4>Motivations</h4>
+    <ul>
+      <li>Enjoys interactive and visual learning over traditional verbal instruction.</li>
+      <li>Prefers structured and predictable ways to communicate answers.</li>
+      <li>Likes hands-on activities but struggles with open-ended verbal discussions.</li>
+      <li>Finds comfort in using symbols, colors, and gestures for communication.</li>
+    </ul>
+
+    <h4>Ideal Features</h4>
+    <ul>
+      <li>A non-verbal way to answer questions using colors, icons, or hand gestures.</li>
+      <li>Simple and minimal UI to reduce cognitive overload.</li>
+      <li>A predictable and structured interaction model to provide comfort.</li>
+      <li>Options for visual cues rather than only text-based questions.</li>
+    </ul>
+
+    <h4>Pain Points</h4>
+    <ul>
+      <li>Struggles with verbal expression and prefers structured communication.</li>
+      <li>Gets overwhelmed by too much screen interaction or complex interfaces.</li>
+      <li>Finds waiting time frustrating when setting up digital tools.</li>
+      <li>Easily distracted by too much movement or noise in the classroom.</li>
+    </ul>
+  </div>
+
+</div>
+
+---
+
+## Use-case diagrams
+
+**Teacher leading in classroom with non-verbally communicating students**
+
+![Use Case Diagram](/img/use-case-diagram.png)
+
+---
+
+## MoSCoW requirements
+
+
+
+### Functional Requirements
+
+<div class="moscow-container">
+  <div class="moscow-card">
+    <h4>Must Have</h4>
+    <ul>
+      <li>The system should be able to recognize if a student raises his/her hand.</li>
+      <li>Ensure that the system is able to correctly recognize card colors such as red, blue, yellow and green.</li>
+      <li>Teachers can immediately see students’ hands up or color feedback to adjust teaching strategies.</li>
+    </ul>
+  </div>
+  <div class="moscow-card">
+    <h4>Should Have</h4>
+    <ul>
+      <li>Provide statistics on student interactions at the end of class.</li>
+      <li>The system can reduce the need for teachers to check the screen frequently by broadcasting feedback via voice.</li>
+      <li>Can be used individually or in combination with “Hands Up Mode” or “Card Mode”.</li>
+    </ul>
+  </div>
+  <div class="moscow-card">
+    <h4>Could Have</h4>
+    <ul>
+      <li>Allows teachers to define specific gestures to suit different classroom needs.</li>
+      <li>Interaction data from multiple classrooms can be stored for teachers to analyze over time.</li>
+      <li>Supports integration with distance learning tools such as Zoom, Google Meet, etc.</li>
+    </ul>
+  </div>
+  <div class="moscow-card">
+    <h4>Won’t Have</h4>
+    <ul>
+      <li>The current system focuses only on hand raising and simple color recognition, no complex sign language recognition.</li>
+      <li>A standalone mobile app will not be developed in the short term, but will be used as a desktop or web-based tool.</li>
+      <li>Individual student performance will not be tracked over time, only anonymous stats to avoid privacy concerns.</li>
+    </ul>
+  </div>
+</div>
+
+---
+
+### Non-functional Requirements
+
+
+    <h4>Must Have</h4>
+    <ul>
+      <li>At least 95% accuracy in gesture and color recognition to ensure reliable feedback.</li>
+      <li>Process and display student feedback within 1 second to keep class flowing.</li>
+      <li>Can be run in a normal camera environment without additional hardware.</li>
+    </ul>
+
+    <h4>Should Have</h4>
+    <ul>
+      <li>UI design is simple and intuitive for teachers to understand and operate quickly.</li>
+      <li>Questions can be created for the teacher via AI models, saving teacher preparation time.</li>
+      <li>Allows teachers to adjust gesture detection sensitivity for different environments.</li>
+    </ul>
+
+
+    <h4>Could Have</h4>
+    <ul>
+      <li>Can be run offline without relying on the network, suitable for unstable networks.</li>
+      <li>Gesture and color detection accuracy can be improved through AI training in the future.</li>
+      <li>Provides a dark color theme to reduce screen impact on the teacher’s vision.</li>
+    </ul>
+
+    <h4>Won’t Have</h4>
+    <ul>
+      <li>Won’t rely on cloud computing, data processed locally whenever possible to ensure low latency.</li>
+      <li>Won’t develop specialized hardware devices, but remain compatible with existing computers/cameras.</li>
+      <li>Does not consider VR/AR features, focusing on realistic classroom environments.</li>
+    </ul>
+
