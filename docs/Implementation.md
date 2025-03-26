@@ -133,6 +133,115 @@ The system writes results to the output files every **0.5 seconds**.
 
 ---
 
+### Implementation – Darknet to ONNX Conversion Pipeline
+
+The conversion from Darknet YOLO to ONNX format is aiming to integrate the hand detection model into a more flexible inference pipeline. However, the process proved to be non-trivial due to configuration nuances and dependency compatibility issues.
+
+#### The toolchain and dependencies used are summarized below:
+| Tool / Library     | Version               |
+|--------------------|------------------------|
+| Python             | 3.8 (via Miniconda)    |
+| PyTorch            | 1.8.0                  |
+| TorchVision        | 0.9.0                  |
+| ONNX               | latest                 |
+| ONNX Runtime       | latest                 |
+| OpenCV             | latest                 |
+| CUDA               | 10.2                   |
+| cuDNN              | Compatible with CUDA 10.2 |
+
+#### Environment Setup
+
+We used **Miniconda** to manage Python environments for better control over dependency versions. The specific environment was created as follows:
+
+```bash
+conda create -n pytorch16_env python=3.8 -y
+conda activate pytorch16_env
+pip install torch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 -f https://download.pytorch.org/whl/torch_stable.html
+pip install onnx onnxruntime opencv-python numpy
+```
+
+### Files Required for Conversion
+
+Before conversion, the following files are required:
+
+- `cross-hands-yolov4-tiny.cfg`: YOLO configuration file
+- `cross-hands-yolov4-tiny.weights`: Pretrained weights
+- `cross-hands-yolov4-tiny.names`: Class names (e.g. `hand`)
+- A sample input image (e.g. `hand.jpg`)
+- Batch size parameter
+
+> **Note:**  
+> If `batch size > 0`, the exported ONNX model will have **static** batch size.  
+> If `batch size ≤ 0`, it will be **dynamic**.
+
+### Modifications to Configuration File
+
+One of the major challenges was ensuring the correct scaling behavior in the YOLO `.cfg` file. The original file contained:
+
+```ini
+scales=.1,.1
+```
+
+This aggressive scaling caused the model to underperform or even fail to export. We modified the following parameters for better performance and compatibility:
+
+```ini
+scales=0.5,0.5
+scale_x_y = 1.1   ; added to avoid KeyError during export
+resize = 1.5    ; improves bounding box size consistency
+```
+
+### Model Conversion Process
+
+After several iterations, we successfully exported a functional ONNX model and verified its correctness using ONNX Runtime and visual inspection of bounding boxes.
+
+We leveraged the official [pytorch-YOLOv4 repository](https://github.com/Tianxiaomo/pytorch-YOLOv4) for the conversion, particularly the `tool` folder and the `demo_darknet2onnx.py` script, which greatly facilitated the Darknet-to-ONNX transformation.
+
+After ensuring the configuration was correct, we cloned the `demo_darknet2onnx.py` conversion scripts and `tool` folder, then ran the export script:
+
+```bash
+python demo_darknet2onnx.py <cfgFile> <namesFile> <weightFile> <imageFile> <batchSize>
+```
+### Common Issues Encountered During Conversion
+
+During the conversion, heres are some common several issues that may encountered:
+
+- **Missing `scale_x_y` in the configuration file**  
+  This caused a `KeyError` during export. It was resolved by manually adding the `scale_x_y` parameter.
+
+- **ONNX export failure**  
+  This was fixed by explicitly setting the `opset_version` to 11 during the export process.
+
+- **NaN values in the model outputs**  
+  We discovered this issue after exporting. It was resolved by checking the model weights and re-exporting from a clean `.weights` file.
+
+- **Incorrect bounding boxes in prediction results**  
+  This was addressed by tuning parameters such as `scale_x_y` and `resize` in the configuration file to improve prediction quality.
+
+After iterating through these fixes, we successfully exported a working ONNX model and validated its functionality using ONNX Runtime and visual inspection of the prediction results.
+
+
+##  ONNX Model Inference and Postprocessing
+
+Once the model was successfully converted, we built an inference script using **ONNX Runtime**. The input image is:
+
+- Resized to the expected input shape `[1, 3, 416, 416]`
+- Normalized to the range `[0, 1]`
+- Passed into the ONNX model for inference
+
+The model outputs two arrays:
+
+- **`boxes`**: containing bounding box coordinates  
+- **`confs`**: containing objectness scores
+
+We apply **post-processing**, including:
+
+- **Confidence thresholding**
+- **Non-Maximum Suppression (NMS)**
+
+These steps filter out low-confidence or overlapping predictions. The final detection results are visualized and saved as `predictions_onnx.jpg`.
+
+---
+
 ### Quiz Generator
 
 One feature of the app we decided to include was an **LLM (Large Language Model)** which generates multiple choice quizzes based on a given input text, such as one found in a textbook describing either a scientific concept, or fact of some kind. 
