@@ -76,7 +76,7 @@ const config = {
           {type: 'doc', docId: 'Testing', label: 'Testing', position: 'left'},
           {type: 'doc', docId: 'Evaluation', label: 'Evaluation', position: 'left'},
           {type: 'doc', docId: 'Appendices', label: 'Appendices', position: 'left'},
-          {to: '/blog', label: 'Blog', position: 'left'},
+          {href: 'https://www.google.co.uk/', label: 'Blog', position: 'left'},
           {
             href: 'https://github.com/mahtanikrish/group3',
             label: 'GitHub',
