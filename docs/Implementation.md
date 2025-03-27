@@ -6,11 +6,15 @@ title: Implementation
 
 ## Main Tools and Dependencies
 
-- **OpenVINO** – Intel’s framework used for running neural network models efficiently.  
-- **Python** – Primary language for implementing detection logic.  
-- **MFC (Microsoft Foundation Class)** – Used for UI integration and system interaction.  
-- **C++** – Provides low-level system control where needed.  
-- **OpenCV** – Used for image processing and visualization.
+## Main Tools and Dependencies
+
+## Pictures will show in html
+
+**OpenVINO** – Intel’s framework used for running neural network models efficiently.  
+**Python** – Primary language for implementing detection logic.  
+**MFC (Microsoft Foundation Class)** – Used for UI integration and system interaction.  
+**C++** – Provides low-level system control where needed.  
+**OpenCV** – Used for image processing and visualization.
 
 ---
 
@@ -18,41 +22,92 @@ title: Implementation
 
 The basis of our hand detection is built upon an open-source pre-trained **YOLO-based hand detection** implementation by [Florian Bruggisser](https://github.com/cansik/yolo-hand-detection?tab=readme-ov-file). We extended this implementation to better suit our needs, converting his models to a **YOLOv4 Tiny ONNX** model before converting it to **OpenVINO IR format** to generate a `.xml` and `.bin` version of the files. By converting it into this format, it ensures efficient hand detection in real-time environments as the inferences are made much faster.
 
-
 ### Key Components
 
 - **Model**: `cross-hands-yolov4-tiny.xml` (IR format for OpenVINO)
-
 - **YOLO OpenVINO Inference**: Implemented in `yolo.py` to load and run detections on frames.
-
-- **Confidence Filtering**: Detections are filtered using a confidence threshold of `0.5` and **Non-Maximum Suppression (NMS)** to refine the results.
-
+- **Confidence Filtering**: Detections are filtered using a confidence threshold of `0.2` and **Non-Maximum Suppression (NMS)** to refine the results.
 - **Integration with OpenCV**: OpenCV allows the program to access the webcam and passes frames to the YOLO model to return the coordinates of the bounding boxes around the hands.
 
+### Process Flow
 
-### Process Flow (with diagram)
+1. **Model Initialization**: OpenVINO loads the model and compiles it for CPU inference.
+2. **Frame Capture**: Webcam frames are streamed using OpenCV.
+3. **Preprocessing**: Frames are resized and normalized into input blobs.
+4. **YOLO Inference**: Blobs are passed to OpenVINO for inference.
+5. **Post-processing**: Apply confidence filtering and NMS to keep valid hand detections.
+6. **Bounding Box Drawing**: Visual feedback drawn with OpenCV rectangles.
 
-1. **Model Initialization**: OpenVINO loads the model and it is compiled for the CPU using OpenVINO’s inference engine.
+### Inference Breakdown
 
-2. **Frame Capture**: Frames are captured in real time from a webcam using OpenCV.
+- **Model Conversion**: Darknet → ONNX → OpenVINO IR (via Model Optimizer).
+- **OpenVINO Compiling**: `Core().read_model()` and `compile_model()` are used.
+- **Input Shape**: Resized to `416x416` via `cv2.dnn.blobFromImage()`.
+- **Execution**: Outputs are raw bounding boxes and confidence scores.
+- **NMS Filtering**: Keep top bounding boxes using OpenCV’s `NMSBoxes`.
 
-3. **YOLO Inference**: The frame is preprocessed and passed through the YOLO model for detection.
+### Code Snippet: YOLO Inference and Hand Detection
 
-4. **Post-processing**: Detected hand regions are extracted, filtered using a confidence threshold, and processed using **Non-Maximum Suppression (NMS)** to remove redundant detections.
+```python
+def inference(self, image):
+    ih, iw = image.shape[:2]
+ 
+    # Preprocess the image
+    blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (self.size, self.size), swapRB=True, crop=False)
+    input_tensor = np.array(blob, dtype=np.float32)
+ 
+    # Run inference
+    results = self.compiled_model([input_tensor])
+ 
+ 
+    boxes, confidences = self.process_output(results, iw, ih)
+    return boxes, confidences
+ 
+def process_output(self, results, iw, ih):
+    boxes_output = results[0].reshape(-1, 4)  # Bounding box coordinates
+    confidences_output = results[1].reshape(-1)  # Confidence scores
+ 
+    # Convert bounding boxes back to original image size
+    boxes_output[:, [0, 2]] *= iw
+    boxes_output[:, [1, 3]] *= ih
+    boxes_output = boxes_output.astype(int)
+ 
+    # Apply confidence filtering
+    indices = np.where(confidences_output > self.confidence)[0]
+    boxes = boxes_output[indices]
+    confidences = confidences_output[indices]
+ 
+    # Apply Non-Maximum Suppression (NMS)
+    if len(boxes) > 0:
+        indices = cv2.dnn.NMSBoxes(boxes.tolist(), confidences.tolist(), self.confidence, self.threshold)
+        if len(indices) > 0:
+            indices = indices.flatten()
+            boxes = boxes[indices]
+            confidences = confidences[indices]
+ 
+    return boxes, confidences
+```
 
-5. **Bounding Box Drawing**: Detected hands are visualized on the frame using OpenCV’s drawing functions.
+To enable efficient hand detection in real time, we use the YOLOv4 Tiny model, optimized for speed and lower computational load. This model is converted into OpenVINO IR (Intermediate Representation) format, which includes a .xml and .bin file that OpenVINO can parse and optimize for Intel CPUs.
 
-6. **State Monitoring**: A background thread checks for a system shutdown command and stops the process if required by reading from `state.txt`.
+### Inference Process Breakdown:
+ **Model Conversion**: The original YOLOv4 Tiny weights (Darknet format) are converted to ONNX, then to OpenVINO IR format using the mo (Model Optimizer) tool from OpenVINO.
 
- Code Implementation (YOLO Inference)
+ **Model Loading**: OpenVINO's Core() API reads and compiles the IR model for CPU execution. This compilation process optimizes the inference graph for faster runtime.
 
-> _Snippet of code where YOLO inference is initialized will be shown here (e.g. from `yolo.py`)_
+**Image Preprocessing**: Frames are resized and normalized using OpenCV’s cv2.dnn.blobFromImage to produce a 416x416 input blob. Pixel values are scaled to [0,1] and the channel order is adjusted to match the model’s training configuration.
+
+**Inference Execution**: The preprocessed image blob is passed to OpenVINO’s compiled model. The result is a pair of tensors: Bounding boxes for detected objects and Confidence scores for each detection
+
+**Post-Processing**: We reshape the output tensors, rescale the coordinates to match the original frame, and apply a confidence filter (> 0.2). Finally, we use OpenCV’s NMSBoxes function to perform Non-Maximum Suppression, keeping only distinct hand detections.
+
+This allows our application to run detection reliably at high speed, even on school-grade Intel hardware.
 
 ---
 
 ## Card Detection
 
-To implement this feature, we used a clever workaround where once we detect a hand in frame, we then search for the card in a **Region of Interest (ROI)** above the middle of the hand. The program then checks the pixels in said region and picks the most dominant colour. These values are then written to a JSON file which is read by the program to display on the frontend to the user.
+To implement this feature, we used a clever workaround where once we detect a hand in frame, we then search for the card in a **Region of Interest (ROI)** above the middle of the hand. The program then checks the pixels in said region and picks the most dominant colour. These values are then written to a .txt file which is read by the program to display on the frontend to the user.
 
 ### Key Components
 
@@ -63,7 +118,7 @@ To implement this feature, we used a clever workaround where once we detect a ha
 - **Morphological Processing**: Erosion and dilation on the image improve detection accuracy.
 
 
-### Process Flow (with diagram)
+### Process Flow 
 
 - **Detection from YOLO**: A detected hand’s bounding box is extracted from the YOLO output.
 - **Region Cropping**: The card’s region is cropped from the original frame by searching above the hand.
@@ -72,10 +127,49 @@ To implement this feature, we used a clever workaround where once we detect a ha
 - **Color Masking**: Predefined HSV thresholds for red, yellow, green, and blue are applied to create binary masks.
 - **Pixel Count Analysis**: The number of pixels matching each color is counted.
 - **Classification**: The color with the highest count is assigned as the detected card color if it exceeds the minimum threshold.
-- **Logging**: Detected colors are written to the JSON file for tracking purposes.
+- **Logging**: Detected colors are written to the .txt file for tracking purposes.
 - **Visualization**: Detected cards are labeled with a bounding box in their color.
 
-> *[Insert snippet of code with HSV ranges here]*
+```python
+# HSV Color Ranges
+COLOR_RANGES = {
+    "red": [((0, 100, 100), (10, 255, 255)), ((160, 100, 100), (179, 255, 255))],
+    "yellow": [((20, 100, 100), (30, 255, 255))],
+    "green": [((35, 50, 50), (85, 255, 255))],
+    "blue": [((90, 50, 50), (140, 255, 255))]
+}
+
+def detect_card_color(hsv_region, min_area_ratio=0.05):
+    hsv_blur = cv2.GaussianBlur(hsv_region, (5, 5), 0)
+    total_area = hsv_region.shape[0] * hsv_region.shape[1]
+    color_counts = {c: 0 for c in COLOR_RANGES.keys()}
+
+    for color, ranges in COLOR_RANGES.items():
+        combined_mask = np.zeros(hsv_region.shape[:2], dtype=np.uint8)
+
+        # Applying morphological operations
+        for lower, upper in ranges:
+            mask = cv2.inRange(hsv_blur, np.array(lower), np.array(upper))
+            mask = cv2.erode(mask, None, iterations=1)
+            mask = cv2.dilate(mask, None, iterations=1)
+            combined_mask = cv2.bitwise_or(combined_mask, mask)
+        color_counts[color] = cv2.countNonZero(combined_mask)
+
+    best_color = max(color_counts, key=color_counts.get)
+    max_pixels = color_counts[best_color]
+    return best_color if max_pixels >= min_area_ratio * total_area else None
+```
+- This function takes an HSV image region and determines which of the predefined color ranges is most dominant. 
+
+- The region is blurred using a Gaussian filter to reduce noise, and binary masks are generated for each color range using`cv2.inRange`. 
+
+- Morphological operations (erosion and dilation) help clean the mask, enhancing accuracy. 
+
+- The number of non-zero pixels is counted for each color mask, and the color with the highest pixel count is selected—provided it exceeds a minimum area threshold. 
+
+This allows the system to classify card colors accurately in real time, even under varying lighting conditions.
+
+
 
 ---
 
@@ -83,35 +177,17 @@ To implement this feature, we used a clever workaround where once we detect a ha
 
 The **tabletop mode** is designed for users with reduced motor functions. Rather than holding a card up, the user would move their hand near or on their selected card on the table. This feature greatly increased the usability of our application and helps drive engagement in scenarios that we had not initially considered.
 
- *[Demo Video of Tabletop Mode]*
+*** [DEMO VIDEO, DOESNT WORK IN DOCUSAURUS ] ***
 
 We implemented this feature by changing the relative direction of the region of interest (ROI) in the frame that is passed to the YOLO model. It only required **one line of code** to be modified.
+```python
+SHIFT_UP_FACTOR = 0.8
+if mode == "Table Top Card Counting":
+    SHIFT_UP_FACTOR *= -1
+```
 
- *[Insert snippet of code for tabletop mode]*
 
 When the user selects the tabletop option, the application writes the value of **–1** to the `mode` file. This is checked in `colour_write`, and if so, it changes the direction of where the region of interest would be situated in the image. The rest of the colour detection logic remains **unchanged**.
-
-
----
-
-### Keyboard Interactions
-
-By integrating interactions between the keyboard and the application, we have expanded our project greatly. There are multiple features that have been added using keyboard inputs.
-
-Firstly, by hitting the space bar the video input would freeze, and the current counts of the cards would be held regardless of whether or not the students drop the cards out of frame afterwards. This is held until the teacher hits the space bar again. This allows the teacher to control the pacing of the quiz and have ample time to save the counts to their device without the risk of students dropping their cards before the teacher saves the values.
-
-[C CODE SNIPPET where it checks for space bar and writes to a file]
-
-When the user presses the space bar, the program will write to the state file and change the state to –1. This will then freeze the image and hold the current state of each of the colour counts.
-
-
-Another feature that was requested in the final few weeks of development was to modify our program so that people using switches were also able to take part in HandsUp!. After discussing it with our supervisor and teachers from the [FORGOT THE NAME OF THE SCHOOL], we were instructed to simply add a feature where the z,x,c,v keys are mapped to increment blue, red, green and yellow respectively [CORRECT THE ORDER]. This feature meant that teachers can map inputs from the students switches onto these keys to allow them to interact with the game alongside students that are able to utilise the cards.
-
-[CODE SNIPPET]
-
-To reset this counter the teacher
-
-
 
 ---
 
@@ -130,115 +206,6 @@ To reset this counter the teacher
 The system writes results to the output files every **0.5 seconds**.
 
 **Code Snippet:** _[Insert logic that checks last write time]_
-
----
-
-### Implementation – Darknet to ONNX Conversion Pipeline
-
-The conversion from Darknet YOLO to ONNX format is aiming to integrate the hand detection model into a more flexible inference pipeline. However, the process proved to be non-trivial due to configuration nuances and dependency compatibility issues.
-
-#### The toolchain and dependencies used are summarized below:
-| Tool / Library     | Version               |
-|--------------------|------------------------|
-| Python             | 3.8 (via Miniconda)    |
-| PyTorch            | 1.8.0                  |
-| TorchVision        | 0.9.0                  |
-| ONNX               | latest                 |
-| ONNX Runtime       | latest                 |
-| OpenCV             | latest                 |
-| CUDA               | 10.2                   |
-| cuDNN              | Compatible with CUDA 10.2 |
-
-#### Environment Setup
-
-We used **Miniconda** to manage Python environments for better control over dependency versions. The specific environment was created as follows:
-
-```bash
-conda create -n pytorch16_env python=3.8 -y
-conda activate pytorch16_env
-pip install torch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 -f https://download.pytorch.org/whl/torch_stable.html
-pip install onnx onnxruntime opencv-python numpy
-```
-
-### Files Required for Conversion
-
-Before conversion, the following files are required:
-
-- `cross-hands-yolov4-tiny.cfg`: YOLO configuration file
-- `cross-hands-yolov4-tiny.weights`: Pretrained weights
-- `cross-hands-yolov4-tiny.names`: Class names (e.g. `hand`)
-- A sample input image (e.g. `hand.jpg`)
-- Batch size parameter
-
-> **Note:**  
-> If `batch size > 0`, the exported ONNX model will have **static** batch size.  
-> If `batch size ≤ 0`, it will be **dynamic**.
-
-### Modifications to Configuration File
-
-One of the major challenges was ensuring the correct scaling behavior in the YOLO `.cfg` file. The original file contained:
-
-```ini
-scales=.1,.1
-```
-
-This aggressive scaling caused the model to underperform or even fail to export. We modified the following parameters for better performance and compatibility:
-
-```ini
-scales=0.5,0.5
-scale_x_y = 1.1   ; added to avoid KeyError during export
-resize = 1.5    ; improves bounding box size consistency
-```
-
-### Model Conversion Process
-
-After several iterations, we successfully exported a functional ONNX model and verified its correctness using ONNX Runtime and visual inspection of bounding boxes.
-
-We leveraged the official [pytorch-YOLOv4 repository](https://github.com/Tianxiaomo/pytorch-YOLOv4) for the conversion, particularly the `tool` folder and the `demo_darknet2onnx.py` script, which greatly facilitated the Darknet-to-ONNX transformation.
-
-After ensuring the configuration was correct, we cloned the `demo_darknet2onnx.py` conversion scripts and `tool` folder, then ran the export script:
-
-```bash
-python demo_darknet2onnx.py <cfgFile> <namesFile> <weightFile> <imageFile> <batchSize>
-```
-### Common Issues Encountered During Conversion
-
-During the conversion, heres are some common several issues that may encountered:
-
-- **Missing `scale_x_y` in the configuration file**  
-  This caused a `KeyError` during export. It was resolved by manually adding the `scale_x_y` parameter.
-
-- **ONNX export failure**  
-  This was fixed by explicitly setting the `opset_version` to 11 during the export process.
-
-- **NaN values in the model outputs**  
-  We discovered this issue after exporting. It was resolved by checking the model weights and re-exporting from a clean `.weights` file.
-
-- **Incorrect bounding boxes in prediction results**  
-  This was addressed by tuning parameters such as `scale_x_y` and `resize` in the configuration file to improve prediction quality.
-
-After iterating through these fixes, we successfully exported a working ONNX model and validated its functionality using ONNX Runtime and visual inspection of the prediction results.
-
-
-##  ONNX Model Inference and Postprocessing
-
-Once the model was successfully converted, we built an inference script using **ONNX Runtime**. The input image is:
-
-- Resized to the expected input shape `[1, 3, 416, 416]`
-- Normalized to the range `[0, 1]`
-- Passed into the ONNX model for inference
-
-The model outputs two arrays:
-
-- **`boxes`**: containing bounding box coordinates  
-- **`confs`**: containing objectness scores
-
-We apply **post-processing**, including:
-
-- **Confidence thresholding**
-- **Non-Maximum Suppression (NMS)**
-
-These steps filter out low-confidence or overlapping predictions. The final detection results are visualized and saved as `predictions_onnx.jpg`.
 
 ---
 
@@ -267,4 +234,5 @@ Having fine tuned it, we could then run the model inference and test the output.
 After testing this new fine-tuned model, we realised that while the output is consistent in format, the quizzes often have **repeated options**, and **incorrect answers**. 
 
 To fix this, we decided to switch to **flan-t5-large** due to its increased parameter count over its base model, hoping that it would be able to draw more information from a wider range of topics.
+
 
