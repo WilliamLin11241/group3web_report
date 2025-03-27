@@ -211,28 +211,143 @@ The system writes results to the output files every **0.5 seconds**.
 
 ### Quiz Generator
 
-One feature of the app we decided to include was an **LLM (Large Language Model)** which generates multiple choice quizzes based on a given input text, such as one found in a textbook describing either a scientific concept, or fact of some kind. 
+Unfortunately, due to time constraints we were unable to fully integrate this part of the project into the app. Given another week, it would be more than feasible to accomplish. This part of the project was the LLM quiz generator. We managed to get a fully compiled version of it, but didn’t quite manage to integrate it in the front end. Below is how we implemented the LLM.
 
-The first main step of this was to decide where to begin. We looked towards the HuggingFace model library to find a suitable model for this task. The model needed to have a wide breadth of knowledge across multiple topics to properly generate the quizzes. We switched between models a lot, depending on which would perform better given a series of prompts, and eventually settled on **google/flan-t5-base** for its low file size, large parameter counts and hence extensive knowledge.
+**Choosing an LLM model**
 
-However, one major problem we encountered with testing these models on inputs ranging different lengths and topics was **inconsistencies within the output**. Outputs would range from generating blank outputs, nonsense, correct quizzes but in strange formats. All of these made post processing of the quiz output extremely frustrating due to the unpredictability of the output, and hence inconsistent writing to files and improper frontend backend interaction.
+Due to this app already having many components to it, we were very limited on the size of the model we could use for the quiz generator. However problems we encountered with very small models, ~2GB in size, was that it simply didn’t have enough parameters, therefore knowledge to properly generate quizzes. Eventually we settled on an 11GB text2text generation model called google/flan-t5-xl.
 
-A fix we thought of to combat this, was to gather hundreds of input and output data in the form we wanted it to be, and fine tune the model on this input data, leaving some for validation data, so that the model can then learn on the precise information we want it to know. The following code demonstrates how this was achieved.
+**Testing and Training**
 
-- [Explain Code]  
-- [imports]  
-- [load datasets, show example of data]  
-- [load model]  
-- [preprocessing function]  
-- [training]  
-- [save model]  
+Once we chose the LLM, we tried prompt engineering to obtain the desired output. However, it was very inconsistent in its output and was very difficult to parse in order to be used with the front end. We eventually had the idea to fine tune the model, to more frequently achieve the correct format. To fine tune it, I obtained a specific set of json files using various resources such as Kahoot, and made them into the following format: 
 
-Having fine tuned it, we could then run the model inference and test the output.
+```python
+[
+    {
+        "text": """A coral reef is a colorful underwater habitat made by tiny animals called corals.
+        These corals build hard skeletons that form reefs over many years.
+        Coral reefs are home to many fish and sea creatures.
+        They need clean, warm water and sunlight to stay healthy.""",
 
-- [show inference code]
+        "response": """Q: What are coral reefs made by?
+        \nA) Giant sea turtles\nB) Small animals called corals
+        \nC) Floating pieces of wood\nD) Electricity from eels\nAns) B"""
+    }
+]
+```
 
-After testing this new fine-tuned model, we realised that while the output is consistent in format, the quizzes often have **repeated options**, and **incorrect answers**. 
+This has a “text”, which is the input the teacher would give, and reference “response” in the form of a quiz, which specifies the question, 4 multiple choice answers, and the correct answer.
 
-To fix this, we decided to switch to **flan-t5-large** due to its increased parameter count over its base model, hoping that it would be able to draw more information from a wider range of topics.
+We gathered this training data, and set aside some more examples for validation data, and processed them in the code like so:
 
+```python
+dataset = load_dataset(
+    'json',
+    data_fils={
+        'train': 'trainingdata.json',
+        'validation: 'validationdata.json'
+    }
+)
+```
 
+Then I loaded the model from the HuggingFace website, and created a preprocess function which takes a given prompt, which includes the correct quiz format, and other information to generate the quiz, and then prepares it to be trained on. We create a tokenizer for the model, and use the Seq2Seq method since we are implementing a text to text generation LLM.
+
+We then use the quiz format and the input prompt alongside the training data, to define targets in the form of the response. This clearly defines the input and target output for the model to learn from. The following code creates a list of inputs into the training of the LLM, which contain the prompt, and the text it needs to compute the quiz output.
+
+```python
+model_name = "google/flan-t5-xl"
+
+tokenizer = AutoTokenizer.from_pretrained(
+    model_name,
+    use_fast=False
+)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+def preprocess_function(examples):
+    # input, examples, is expecting a dictionary of our training data with two keys: "text" and "response"
+    quizformat = "Q: [Question]\nA) [option 1]\nB) [option 2]\nC)" \
+                 "[option 3]\nD) [option 4]\nAns) [answer]"
+    inputs = examples["text"]
+    inputs = [f"""You are a knowledgeable assistant with extensive knowledge on""" 
+               """the given factual text. Generate a multiple choice quiz specifying the"""
+               """question, 4 distinct options, and the true answer in this format: """
+               """{quizformat}, ensuring the four options A) B) C) D) are all different, and""" 
+               """ensuring Ans) gives the factually correct answer to the question Q, """
+               """and ensuring there is only one correct option, for the following """
+               """factual text: {inp}""" for inp in inputs]
+```
+
+Finally we define some arguments for training, ensuring the number of epochs we train on is enough to properly process the dataset.
+
+```python
+training_args = TrainingArguments(
+    output_dir="quiz",
+    eval_strategy="epoch",
+    learning_rate=2e-5,
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=4,
+    num_train_epochs=3,
+    weight_decay=0.01,
+    logging_steps=50,
+    save_steps=200,
+    save_total_limit=2,
+)
+```
+
+And then we begin the process of training, specifying the training – testing data split, the model and tokenzier, the training arguments previously defined and a data collator.
+
+```python
+data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
+trainer = Trainer(
+    model=model,
+    agrs=training_args,
+    train_dataset=processed_dataset["train"],
+    eval_dataset=processed_dataset["validation"],
+    tokenzier=tokenizer,
+    data_collator=data_collator,
+)
+trainer.train()
+```
+
+We train and save our new model under a name which makes it clear which model we fine-tuned, along with the version number of that model.
+
+```python
+version = 1
+index = model_name.index("/")
+model_name = model_name[:index] + "-" + model_name[index+1:]
+trained_model_name = f"trainedmodel{version}-{model_name}"
+trainer.save_model(trained_model_name)
+tokenizer.save_pretrained(trained_model_name)
+```
+
+**Quantising and converting to OpenVINO**
+
+We realised that the model is far too big to deploy in its current state, but since deciding on that large 11GB model, we already had plans to quantise it. OpenVINO has a very handy way to convert any model from HuggingFace to OpenVINO format, and in the process you can either 4bit or 8bit quantise. 
+Using this command: 
+
+optimum-cli export openvino --model MODEL_PATH --task text2text-generation --library transformers --weight-format int4 MODEL_NAME
+
+we managed to convert the model to OpenVINO format, and quantise it in the process, getting the size down to 1.51GB, which is a much more manageable size than 10GB for distribution of a classroom app.
+
+A side note on quantising, we tested both 8bit and 4bit quantisation as we did not know how much inference power would be lost when quantising. But as it turns out even when doing a 4bit quantisation, the inference stayed almost the exact same. It was slightly different on vague bits of texts which didnt clearly get any kind of message across, but the results for clear, precise and factually accurate texts were the same - the same quiz was generated from both the base OpenVINO model and the 4bit model.
+
+**Compilation**
+
+It was very tricky to compile the OpenVINO model. Due to all the dependencies that optimum needs, they may not all work well with each other in certain cases. I have documented a step-by-step instruction manual on how I managed to compile this model and get it into a single executable using pyinstaller. 
+
+-	Create virtual environment
+-	Due to dependencies not agreeing with each other, I was forced to modify a source code file: 
+
+    - In “.venv\Lib\site-packages\optimum\exporters\tasks.py” in the function on line 1951, I had to force use transformers using 
+        - inferred_library_name = "transformers"
+        - return inferred_library_name
+
+-	Then we installed pyinstaller
+    - pip install pyinstaller
+
+-	and finally run the following command to compile
+    - pyinstaller --onefile --noconsole QuizGen.py --add-data "MODEL_NAME;MODEL_NAME " --hidden-import=optimum.intel.openvino --hidden-import=transformers --hidden-import=openvino --add-binary ".venv\Lib\site-packages\openvino\libs\*.dll;." --collect-submodules openvino --collect-binaries openvino --collect-data openvino
+
+Finally, once compiled, it returns an executable file which runs the model, and allows text to be input, to produce a quiz output.
+
+This executable also has a functionality to save the quiz, and allow it for easy storing for later. By writing to a text file, it saves this text file in the same directory as the executable is in, allowing for simple access to the quiz if the app is closed.
