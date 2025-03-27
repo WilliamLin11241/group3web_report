@@ -1,4 +1,7 @@
-## Research Section
+---
+id: Research
+title: Research
+---
 
 ### Related Projects Review
 
