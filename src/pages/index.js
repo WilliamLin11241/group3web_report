@@ -74,7 +74,7 @@ export default function Home() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', justifyItems: 'center' }}>
             {[
               { name: 'Aishani', email: 'aishani.sinha.23@ucl.ac.uk', img: '/img/team1.jpg' },
-              { name: 'Krish', email: 'krish.mahtani.23@ucl.ac.uk', img: '/img/team2.jpg' },
+              { name: 'Krish', email: 'krish.mahtani.23@ucl.ac.uk', img: '/img/krish.jpg' },
               { name: 'Misha', email: 'michael.kersh.23@ucl.ac.uk', img: '/img/team3.jpg' },
               { name: 'William', email: 'runfeng.lin.23@ucl.ac.uk', img: '/img/team4.jpg' },
             ].map((member, index) => (
