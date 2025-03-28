@@ -9,21 +9,18 @@ title: Evaluation
 
 |  ID  |     Description     |  Priority  | State | Contributors |
 |------|---------------------|------------|-------|--------------|
-|  01  |The system should be able to recognise a student's raised hand |     Must Have|✓|              |   
-|  02  |The app should be able to correctly identify a single, coloured card raised by a student|Must Have|✓||
-|  03  |The app should be able to correctly identify a student’s choice when on table-top mode|Must Have|✓||
-|  04  |The app should be able to cumulatively count the number of cards raised, using a pause / resume feature|Must Have|✓||
-|  05  |The app should instantaneously react to the card chosen / hand raised, for the teacher to immediately see the feedback|Must Have|✓||
-|  06  |Must utilise fully offline AI models|Must Have|✓||
-|  07  |Must work on windows systems|Must Have|✓||
-|  08  |Must work on and be optimised for all Intel devices|Must Have|✓||
-|  09  |Provide statistics on student interactions at the end of class in the form of card count data|Should Have|✓||
-|  10  |Add an LLM chat bot capable of producing multiple choice questions from a given input text|Should Have|X||
-|  11  |Introduce a “First hands raids” feature which highlights the card which was the first to be raised or detected|Should Have|✓||
-|  12  |Reduce the need for teachers interacting with the screen too much by giving feedback via voice|Could Have|X||
-|  13  |Support integration with distance learning tools such as zoom or teams|Could Have|X||
-|  14  |Complex sign language recognition|Won't Have|X||
-|  15  |Individual student performance trackers|Won't Have|X||
+|  01  |The system should be able to recognise a student's raised hand |     Must Have|✓| Krish, William|   
+|  02  |The app should be able to correctly identify a single, coloured card raised by a student|Must Have|✓| Aishani, Krish, William|
+|  03  |The app should be able to correctly identify a student’s choice when on table-top mode|Must Have|✓| Aishani, Krish|
+|  04  |The app should be able to cumulatively count the number of cards raised, using a pause / resume feature|Must Have|✓| Aishani|
+|  05  |The app should instantaneously react to the card chosen / hand raised, for the teacher to immediately see the feedback|Must Have|✓| Aishani, Krish|
+|  06  |Must utilise fully offline AI models|Must Have|✓| Aishani, Krish, Misha, William|
+|  07  |Must work on windows systems|Must Have|✓|Aishani, Krish, Misha|
+|  08  |Must work on and be optimised for intel CPUs and NPUs|Must Have|✓| Aishani, Krish, Misha, William |
+|  09  |Provide statistics on student interactions at the end of class in the form of card count data|Should Have|✓| Aishani|
+|  10  |Add an LLM chat bot capable of producing multiple choice questions from a given input text|Should Have|X| Misha |
+|  11  |Introduce a “First hands raids” feature which highlights the card which was the first to be raised or detected|Could Have|X| Aishani|
+|  12  |Support integration with distance learning tools such as zoom or teams|Could Have|X| Aishani, Krish, Misha, William|
 
 
 
@@ -31,30 +28,29 @@ title: Evaluation
 
 | Work packages              | Aishani | Krish | Misha | William |
 |---------------------------|------|-----|-----|---------|
-| Research and Experiments  | %  | % | % | %     |
-| UI Design (if applicable) | %  | % | % | %      |
-| Coding                    | %  | % | % | %     |
-| Testing                   | %  | %  | % | %    |
-| **Overall contribution**  | %  | % | % | % |
+| Research and Experiments  | 25 %  | 25 % | 25 % | 25 %     |
+| UI Design (if applicable) | 90 %  | 10 % | 0 % | 0 %      |
+| Coding                    | 45 %  | 35% | 10 % | 10 %     |
+| Testing                   | 20 %  | 30 %  | 30 % | 20 %    |
+| **Overall contribution**  | 35%  | 30% | 15 % | 20 % |
 
 ### Individual Contribution Table For Website
 | Work packages                | Aishani | Krish | Misha | William |
 |-----------------------------|------|-----|-----|---------|
-| Website Template and Setup  | %   | % | % |    %     |
-| Home                        | %  | % | % |    %   |
-| Video                       | %  | % | % |    %     |
-| Requirement                 | %  | % | % |    %     |
-| Research                    | %  | %  | % |    %     |
-| Algorithm (if applicable)   | %  | % | % |    %     |
-| UI Design (if applicable)   | %  | %  | % |   %      |
-| System Design               | %  | %  | % |    %     |
-| Implementation              | %  | % | % |    %     |
-| Testing                     | %   | %  | %|   %      |
-| Evaluation and Future Work  | %  | % | % |     %    |
-| User and Deployment Manuals | %  | %  | % |    %     |
-| Legal Issues                | % | %  | %  |    %     |
-| Blog and Monthly Video      | %  | % | % |    %     |
-| **Overall contribution**    | %  | % | % | % |
+| Website Template and Setup  | 0 %   | 0 % | 0 % |    100%     |
+| Home                        | 30 %  | % | % |   70 %   |
+| Video                       | 5 %  | 85 % | 5 % |    5 %     |
+| Requirement                 | 25 %  | 25 % | 25 % |    25 %     |
+| Research                    | 0 %  | 100 %  | 0 % |    0 %     |
+| UI Design (if applicable)   | 100 %  | 0 %  | 0 % |   0 %      |
+| System Design               | 100 %  | 0 %  | 0 % |    0 %     |
+| Implementation              |  25 %  | 25 % | 25 % |   25 %     |
+| Testing                     | 0 %   | 5 %  | 95 %|   0 %      |
+| Evaluation and Future Work  | 0 %  | 0 % | 100 % |     0 %    |
+| User and Deployment Manuals | 50 %  | 50 %  | 0 % |    0 %     |
+| Legal Issues                | 0 % | 0 %  | 100 %  |   0 %     |
+| Blog and Monthly Video      | 35 %  | 35 % | 20 % |    10 %     |
+| **Overall contribution**    | 30 %  | 15 % | 20 % | 35 % |
 
 ### Critical Evaluation
 
