@@ -331,6 +331,51 @@ we managed to convert the model to OpenVINO format, and quantise it in the proce
 
 A side note on quantising, we tested both 8bit and 4bit quantisation as we did not know how much inference power would be lost when quantising. But as it turns out even when doing a 4bit quantisation, the inference stayed almost the exact same. It was slightly different on vague bits of texts which didnt clearly get any kind of message across, but the results for clear, precise and factually accurate texts were the same - the same quiz was generated from both the base OpenVINO model and the 4bit model.
 
+**Testing Inference**
+
+Having now converted to a 4bit OpenVINO model, we need to test the inference of this new model.
+
+We need to now load the new OpenVINO model using new methods. We must make use of the intel optimum OpenVINO package which allows us to perform inference on OpenVINO LLM models.
+
+```python
+tokenizer = transformers.AutoTokenizer.from_pretrained(model_dir)
+ov_model = optimum.intel.openvino.OVModelForSeq2SeqLM.from_pretrained(
+    model_dir,
+    is_ov_model=True,
+    library="transformers",
+)
+```
+
+We then prepare the same prompt and quiz format as we used in training, and then we can generate the outputs, and extract the quiz from the outputs:
+
+```python
+# prepare prompt for inference
+quizformat = "Q: [Question]\nA) [option 1]\nB) [option 2]\nC)" \
+                 "[option 3]\nD) [option 4]\nAns) [answer]"
+prompt = """You are a knowledgeable assistant with extensive knowledge on""" 
+            """the given factual text. Generate a multiple choice quiz specifying the"""
+           """question, 4 distinct options, and the true answer in this format: """
+           """{quizformat}, ensuring the four options A) B) C) D) are all different, and""" 
+           """ensuring Ans) gives the factually correct answer to the question Q, """               """and ensuring there is only one correct option, for the following """
+           """factual text:"""
+text = input("Enter the text to create a quiz on:")
+new_text = f"{prompt} {text}"
+# generate outputs and extract quiz
+inputs = tokenzier(new_text, return_tensors="pt")
+outputs = ov_model.generate(**inputs, max_length=50)
+quiz = tokenizer.decode(outputs[0], skip_special_tokens=True)
+```
+
+Finally we are left with quiz, which is a string in the correct quiz format, which includes the question, 4 options, and a correct answer.
+Below is an example of a text input, and the output you get from the OpenVINO inference.
+
+> text = "The capital city of the United Kingdom is London. Other cities in the 
+> United Kingdom include Manchester, Cambridge, Durham and Cardiff."
+>
+> quiz = "Q: Which city is the capital of the United Kingdom? A) New York B)
+> London C) Cardiff D) Sydney Ans) B"
+
+
 **Compilation**
 
 It was very tricky to compile the OpenVINO model. Due to all the dependencies that optimum needs, they may not all work well with each other in certain cases. I have documented a step-by-step instruction manual on how I managed to compile this model and get it into a single executable using pyinstaller. 
