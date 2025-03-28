@@ -16,11 +16,11 @@ title: Evaluation
 |  05  |The app should instantaneously react to the card chosen / hand raised, for the teacher to immediately see the feedback|Must Have|✓||
 |  06  |Must utilise fully offline AI models|Must Have|✓||
 |  07  |Must work on windows systems|Must Have|✓||
-|  08  |Must work on and be optimised for intel CPUs and NPUs|Must Have|✓||
+|  08  |Must work on and be optimised for all Intel devices|Must Have|✓||
 |  09  |Provide statistics on student interactions at the end of class in the form of card count data|Should Have|✓||
 |  10  |Add an LLM chat bot capable of producing multiple choice questions from a given input text|Should Have|X||
-|  11  |Reduce the need for teachers interacting with the screen too much by giving feedback via voice|Could Have|X||
-|  12  |Introduce a “First hands raids” feature which highlights the card which was the first to be raised or detected|Could Have|X||
+|  11  |Introduce a “First hands raids” feature which highlights the card which was the first to be raised or detected|Should Have|✓||
+|  12  |Reduce the need for teachers interacting with the screen too much by giving feedback via voice|Could Have|X||
 |  13  |Support integration with distance learning tools such as zoom or teams|Could Have|X||
 |  14  |Complex sign language recognition|Won't Have|X||
 |  15  |Individual student performance trackers|Won't Have|X||

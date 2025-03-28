@@ -76,7 +76,7 @@ To test our app, we had many opportunities to see how people of different ages w
 
 - **Sophie**: 8 Year old Helen Allison Student  
 - **Ben**: 5 Year old Helen Allison Student  
-- **Joseph**: 31 Year old Helen Allison Student  
+- **Joseph**: 31 Year old Helen Allison Teacher 
 - **Becky**: 17 Year old Sixth Form Student
 
 ### Test Case 1
