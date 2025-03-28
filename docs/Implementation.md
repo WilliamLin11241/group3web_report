@@ -20,7 +20,7 @@ title: Implementation
 
 ### Hand Detection
 
-The basis of our hand detection is built upon an open-source pre-trained **YOLO-based hand detection** implementation by [Florian Bruggisser](https://github.com/cansik/yolo-hand-detection?tab=readme-ov-file). We extended this implementation to better suit our needs, converting his models to a **YOLOv4 Tiny ONNX** model before converting it to **OpenVINO IR format** to generate a `.xml` and `.bin` version of the files. By converting it into this format, it ensures efficient hand detection in real-time environments as the inferences are made much faster.
+The basis of our hand detection is built upon an open-source pre-trained **YOLO-based hand detection** implementation by [Florian Bruggisser](https://github.com/cansik/yolo-hand-detection?tab=readme-ov-file) [1]. We extended this implementation to better suit our needs, converting his models to a **YOLOv4 Tiny ONNX** model before converting it to **OpenVINO IR format** to generate a `.xml` and `.bin` version of the files. By converting it into this format, it ensures efficient hand detection in real-time environments as the inferences are made much faster.
 
 #### Key Components
 
@@ -1049,3 +1049,6 @@ This executable also has a functionality to save the quiz, and allow it for easy
 After testing this new fine-tuned model, we realised that while the output is consistent in format, the quizzes often have *repeated options, and **incorrect answers*. 
 
 To fix this, we decided to switch to *flan-t5-large* due to its increased parameter count over its base model, hoping that it would be able to draw more information from a wider range of topics.
+
+## References
+[1] F. Bruggisser, "YOLO-Hand-Detection," GitHub Repository, 2020. [Online]. Available: https://github.com/cansik/yolo-hand-detection

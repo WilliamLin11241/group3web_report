@@ -7,7 +7,7 @@ title: Research
 
 When building the initial requirements list at the beginning of the project, we began researching online for academic papers and previous projects that could inform our design and implementation. We discovered several similar projects — one of which directly influenced our solution — and we were able to gain valuable insights that helped shape and improve our approach. The main projects we focused on were:
 
-#### [Real-Time Application for Detection of Raised Hands and Personal Identification by Deep Learning Algorithms for Camera Images by Atsushi Ogino and Masahiro Tanaka](https://www.jstage.jst.go.jp/article/sss/2022/0/2022_106/_pdf)
+#### [Real-Time Application for Detection of Raised Hands and Personal Identification by Deep Learning Algorithms for Camera Images by Atsushi Ogino and Masahiro Tanaka](https://www.jstage.jst.go.jp/article/sss/2022/0/2022_106/_pdf) [1]
 
 **1.1 Main Features**
 
@@ -20,7 +20,7 @@ When building the initial requirements list at the beginning of the project, we 
 - This project introduced us to YOLO (You Only Look Once) and its limitations, prompting us to use YOLOv4 for improved performance.
 - The idea of creating a region of interest (ROI) relative to the raised hand to locate the face inspired our approach for card detection, where we detect cards relative to the hand’s bounding box.  
 
-#### [YOLO-Hand-Detection by Florian Bruggisser](https://github.com/cansik/yolo-hand-detection)
+#### [YOLO-Hand-Detection by Florian Bruggisser](https://github.com/cansik/yolo-hand-detection) [2]
 
 
 **2.1 Main Features**
@@ -108,3 +108,10 @@ We chose HSV detection with a region of interest (ROI) above the detected hand d
 | Colour Detection         | HSV with Gaussian blur, erosion, and dilation                |
 | Data Pipeline            | Text files                                                   |
 | Packaging Tool           | PyInstaller                                                  |
+
+
+
+### References 
+1. A. Ogino and M. Tanaka, "Real-Time Application for Detection of Raised Hands and Personal Identification by Deep Learning Algorithms for Camera Images," Journal of the Society of Simulation Technology, vol. 2022, no. 0, pp. 106, 2022. [Online]. Available: https://www.jstage.jst.go.jp/article/sss/2022/0/2022_106/_pdf
+
+2. F. Bruggisser, "YOLO-Hand-Detection," GitHub Repository, 2020. [Online]. Available: https://github.com/cansik/yolo-hand-detection
