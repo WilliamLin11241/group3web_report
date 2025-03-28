@@ -4,6 +4,7 @@ import React from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import styles from './index.module.css';
 
@@ -99,7 +100,7 @@ export default function Home() {
 
         <section style={{ maxWidth: '800px', margin: '2rem auto' }}>
           <h2>Gantt Chart</h2>
-          <img src="/img/gantt_chart.png" alt="Gantt Chart" loading="eager" style={{ width: '100%', borderRadius: '0.5rem' }} />
+          <img src={useBaseUrl('/img/gantt_chart.png')} alt="Gantt Chart" style={{ width: '100%', borderRadius: '0.5rem' }} />
           <p style={{ textAlign: 'center', fontStyle: 'italic' }}>From October 21, 2024 to March 28, 2025</p>
         </section>
       </main>
