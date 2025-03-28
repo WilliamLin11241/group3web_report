@@ -6,8 +6,6 @@ title: Implementation
 
 ## Main Tools and Dependencies
 
-## Main Tools and Dependencies
-
 ## Pictures will show in html
 
 **OpenVINO** – Intel’s framework used for running neural network models efficiently.  
