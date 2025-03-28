@@ -140,33 +140,37 @@ Our development process followed an iterative method, where we collected feedbac
   <div class="moscow-card">
     <h4>Must Have</h4>
     <ul>
-      <li>The system should be able to recognize if a student raises his/her hand.</li>
-      <li>Ensure that the system is able to correctly recognize card colors such as red, blue, yellow and green.</li>
-      <li>Teachers can immediately see students’ hands up or color feedback to adjust teaching strategies.</li>
+      <li>The system should be able to recognize if a student raises his/her hand</li>
+      <li>Ensure that the system is able to correctly recognize card colors such as red, blue, yellow and green</li>
+      <li>Ensure that the system can recognised a student's choice on table-top mode</li>
+      <li>Ensure that the app can cumulatively count choices made by the students, with the use of a pause/start feature controlled by the teacher</li>
+      <li>Teachers can immediately see students’ hands up or color feedback to adjust teaching strategies</li>
+      <li>Ensure that the system is fully offline</li>
+      <li>Ensure that the app works on, and is optimsed for all Intel devices, by using OpenVINO for inference</li>
+      <li>Ensure that it works on Window systems</li>
     </ul>
   </div>
   <div class="moscow-card">
     <h4>Should Have</h4>
     <ul>
-      <li>Provide statistics on student interactions at the end of class.</li>
-      <li>The system can reduce the need for teachers to check the screen frequently by broadcasting feedback via voice.</li>
-      <li>Can be used individually or in combination with “Hands Up Mode” or “Card Mode”.</li>
+      <li>Provide statistics on student interactions at the end of class</li>
+      <li>Introduce a "First hands raised" feature which highlights the card which was the first to be raised or detected</li>
     </ul>
   </div>
   <div class="moscow-card">
     <h4>Could Have</h4>
     <ul>
-      <li>Allows teachers to define specific gestures to suit different classroom needs.</li>
-      <li>Interaction data from multiple classrooms can be stored for teachers to analyze over time.</li>
-      <li>Supports integration with distance learning tools such as Zoom, Google Meet, etc.</li>
+      <li>The system can reduce the need for teachers to check the screen frequently by broadcasting feedback via voice</li>
+      <li>Interaction data from multiple classrooms can be stored for teachers to analyze over time</li>
+      <li>Supports integration with distance learning tools such as Zoom, Google Meet, etc</li>
     </ul>
   </div>
   <div class="moscow-card">
     <h4>Won’t Have</h4>
     <ul>
-      <li>The current system focuses only on hand raising and simple color recognition, no complex sign language recognition.</li>
-      <li>A standalone mobile app will not be developed in the short term, but will be used as a desktop or web-based tool.</li>
-      <li>Individual student performance will not be tracked over time, only anonymous stats to avoid privacy concerns.</li>
+      <li>The current system focuses only on hand raising and simple color recognition, no complex sign language recognition</li>
+      <li>A standalone mobile app will not be developed in the short term, but will be used as a desktop or web-based tool</li>
+      <li>Individual student performance will not be tracked over time, only anonymous stats to avoid privacy concerns</li>
     </ul>
   </div>
 </div>
@@ -175,33 +179,31 @@ Our development process followed an iterative method, where we collected feedbac
 
 ### Non-functional Requirements
 
+  <h4>Must Have</h4>
+  <ul>
+    <li>At least 95% accuracy in gesture and color recognition to ensure reliable feedback</li>
+    <li>Process and display student feedback within 1 second to keep class flowing</li>
+    <li>Can be run in a normal camera environment without additional hardware</li>
+  </ul>
 
-    <h4>Must Have</h4>
-    <ul>
-      <li>At least 95% accuracy in gesture and color recognition to ensure reliable feedback.</li>
-      <li>Process and display student feedback within 1 second to keep class flowing.</li>
-      <li>Can be run in a normal camera environment without additional hardware.</li>
-    </ul>
-
-    <h4>Should Have</h4>
-    <ul>
-      <li>UI design is simple and intuitive for teachers to understand and operate quickly.</li>
-      <li>Questions can be created for the teacher via AI models, saving teacher preparation time.</li>
-      <li>Allows teachers to adjust gesture detection sensitivity for different environments.</li>
-    </ul>
+  <h4>Should Have</h4>
+  <ul>
+    <li>UI design is simple and intuitive for teachers to understand and operate quickly</li>
+    <li>Include an LLM chat bot capable of producing multiple choice questions from a given input text</li>
+  </ul>
 
 
-    <h4>Could Have</h4>
-    <ul>
-      <li>Can be run offline without relying on the network, suitable for unstable networks.</li>
-      <li>Gesture and color detection accuracy can be improved through AI training in the future.</li>
-      <li>Provides a dark color theme to reduce screen impact on the teacher’s vision.</li>
-    </ul>
+  <h4>Could Have</h4>
+  <ul>
+    <li>Can be run offline without relying on the network, suitable for unstable networks</li>
+    <li>Gesture and color detection accuracy can be improved through AI training in the future</li>
+    <li>Provides a dark color theme to reduce screen impact on the teacher’s vision</li>
+  </ul>
 
-    <h4>Won’t Have</h4>
-    <ul>
-      <li>Won’t rely on cloud computing, data processed locally whenever possible to ensure low latency.</li>
-      <li>Won’t develop specialized hardware devices, but remain compatible with existing computers/cameras.</li>
-      <li>Does not consider VR/AR features, focusing on realistic classroom environments.</li>
-    </ul>
+  <h4>Won’t Have</h4>
+  <ul>
+    <li>Won’t rely on cloud computing, data processed locally whenever possible to ensure low latency</li>
+    <li>Won’t develop specialized hardware devices, but remain compatible with existing computers/cameras</li>
+    <li>Does not consider VR/AR features, focusing on realistic classroom environments</li>
+  </ul>
 
