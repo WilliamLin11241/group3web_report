@@ -27,6 +27,39 @@ Finally we tested to see if the app would work on different OS. We ran the card 
 
 ## Performance Testing
 
+
+### Performance Comparison: With and Without OpenVINO
+To evaluate the impact of OpenVINO on our application’s performance, we ran a controlled test on a system using an Intel Core i5-12450H CPU with Intel UHD Graphics.
+
+We compared two versions of the backend:
+
+- One running YOLOv4-tiny natively (standard inference)
+
+- The other running YOLOv4-tiny using OpenVINO optimised inference
+
+#### CPU Usage Comparison
+
+We monitored CPU load during active detection.
+
+![CPU GRAPH](../static/img/cpuGraph.png)
+- Without OpenVINO: Average CPU usage hovered between 70-80%, with visible performance spikes and occasional stutter.
+- With OpenVINO: Average CPU usage dropped to around 25-35%, and frame processing was more consistent.
+
+This significant reduction in CPU load means the app runs smoother on lower-end devices and leaves more headroom for multitasking.
+
+
+#### Detection Latency
+
+We also measured the time between a user raising a card and the system reflecting the result on screen.
+
+| Configuration         | Average Detection Latency|                                                          
+|----------------------|----------------------|
+| Without OpenVINO       | ~550 ms      | 
+| Model Format         | ~1.2 ms       |
+
+Thanks to OpenVINO’s optimized model execution, we saw more than a 2× improvement in responsiveness, making interactions feel much more immediate — a crucial factor for classroom use, especially with younger children.
+
+
 **Notes on changing the confidence levels, colour detection accuracy within the code**
 
 We performed various performance tweaks within the code, especially around:
