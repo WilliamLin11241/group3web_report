@@ -69,7 +69,6 @@ const config = {
         items: [
           {type: 'doc', docId: 'Requirements', label: 'Requirements', position: 'left'},
           {type: 'doc', docId: 'Research', label: 'Research', position: 'left'},
-          {type: 'doc', docId: 'Algorithms', label: 'Algorithms', position: 'left'},
           {type: 'doc', docId: 'UI-Design', label: 'UI Design', position: 'left'},
           {type: 'doc', docId: 'System-Design', label: 'System Design', position: 'left'},
           {type: 'doc', docId: 'Implementation', label: 'Implementation', position: 'left'},

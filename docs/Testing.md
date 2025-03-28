@@ -3,7 +3,6 @@ id: Testing
 title: Testing
 ---
 
-## Testing
 
 ### Testing Strategy
 

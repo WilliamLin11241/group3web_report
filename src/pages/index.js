@@ -12,10 +12,10 @@ function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <header
-      className={clsx('hero hero--primary', styles.heroBanner)}
+      className={clsx(styles.heroBanner)}
       style={{
         padding: '12rem 0',
-        backgroundImage: 'url(/img/hero-banner.png)',
+        backgroundImage: `url(${useBaseUrl('/img/welcome.webp')})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -72,10 +72,10 @@ export default function Home() {
           <h2 style={{ textAlign: 'center' }}>Development Team</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', justifyItems: 'center' }}>
             {[
-              { name: 'Aishani', role: 'Roles', email: '@example.com', img: '/img/team1.jpg' },
-              { name: 'Kerish', role: 'Roles', email: '@example.com', img: '/img/team2.jpg' },
-              { name: 'Misha', role: 'Roles', email: '@example.com', img: '/img/team3.jpg' },
-              { name: 'William', role: 'Roles', email: '@example.com', img: '/img/team4.jpg' },
+              { name: 'Aishani', email: 'aishani.sinha.23@ucl.ac.uk', img: '/img/team1.jpg' },
+              { name: 'Kerish', email: 'krish.mahtani.23@ucl.ac.uk', img: '/img/team2.jpg' },
+              { name: 'Misha', email: 'michael.kersh.23@ucl.ac.uk', img: '/img/team3.jpg' },
+              { name: 'William', email: 'runfeng.lin.23@ucl.ac.uk', img: '/img/team4.jpg' },
             ].map((member, index) => (
               <div key={index} style={{ textAlign: 'center', width: '220px' }}>
                 <img
