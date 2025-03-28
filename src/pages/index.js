@@ -55,25 +55,26 @@ export default function Home() {
           </p>
         </section>
 
-        <section style={{ maxWidth: '800px', margin: '2rem auto' }}>
-          <h2>Demo Video</h2>
-          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
-            <iframe
-              src="https://www.youtube.com/embed/your-video-id"
-              title="Project Demo Video"
-              frameBorder="0"
-              allowFullScreen
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            ></iframe>
+        <section style={{ maxWidth: '1000px', margin: '2rem auto' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Demo Video</h2>
+          <div style={{ textAlign: 'center' }}>
+            <video
+              controls
+              style={{ width: '100%', maxWidth: '1000px', borderRadius: '0.75rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+            >
+              <source src={useBaseUrl('/videos/demo.mp4')} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
         </section>
+
 
         <section style={{ maxWidth: '1100px', margin: '2rem auto' }}>
           <h2 style={{ textAlign: 'center' }}>Development Team</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', justifyItems: 'center' }}>
             {[
               { name: 'Aishani', email: 'aishani.sinha.23@ucl.ac.uk', img: '/img/team1.jpg' },
-              { name: 'Kerish', email: 'krish.mahtani.23@ucl.ac.uk', img: '/img/team2.jpg' },
+              { name: 'Krish', email: 'krish.mahtani.23@ucl.ac.uk', img: '/img/team2.jpg' },
               { name: 'Misha', email: 'michael.kersh.23@ucl.ac.uk', img: '/img/team3.jpg' },
               { name: 'William', email: 'runfeng.lin.23@ucl.ac.uk', img: '/img/team4.jpg' },
             ].map((member, index) => (
@@ -98,11 +99,27 @@ export default function Home() {
           </div>
         </section>
 
-        <section style={{ maxWidth: '800px', margin: '2rem auto' }}>
-          <h2>Gantt Chart</h2>
-          <img src={useBaseUrl('/img/gantt_chart.png')} alt="Gantt Chart" style={{ width: '100%', borderRadius: '0.5rem' }} />
-          <p style={{ textAlign: 'center', fontStyle: 'italic' }}>From October 21, 2024 to March 28, 2025</p>
-        </section>
+        <section style={{ maxWidth: '1400px', margin: '2rem auto' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Gantt Chart</h2>
+      <a href={useBaseUrl('/img/gantt_chart.png')} target="_blank" rel="noopener noreferrer">
+        <img
+          src={useBaseUrl('/img/gantt_chart.png')}
+          alt="Gantt Chart"
+          loading="eager"
+          style={{
+            width: '10000px',
+            maxWidth: '100%',
+            display: 'block',
+            margin: '0 auto',
+            borderRadius: '0.75rem',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          }}
+        />
+      </a>
+      <p style={{ textAlign: 'center', fontStyle: 'italic', marginTop: '1rem' }}>
+        From October 21, 2024 to March 28, 2025
+      </p>
+    </section>
       </main>
     </Layout>
   );
