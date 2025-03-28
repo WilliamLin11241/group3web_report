@@ -44,6 +44,11 @@ We monitored CPU load during active detection.
 - Without OpenVINO: Average CPU usage hovered between 70-80%, with visible performance spikes and occasional stutter.
 - With OpenVINO: Average CPU usage dropped to around 25-35%, and frame processing was more consistent.
 
+![npuGraph](../static/img/npuGraph.png)
+- Furthermore, we began testing our OpenVINO version of the code on the NPU provided to UCL by Intel. 
+- After changing the flag in our code before compilation and optimising it for NPU's, there was a huge difference in the performance of our model.
+- Due to the low availability of hardware in the labs, we were unable to complete extensive testing using Intel's PTAT tool to compare power consumption of the versions.
+
 This significant reduction in CPU load means the app runs smoother on lower-end devices and leaves more headroom for multitasking.
 
 
