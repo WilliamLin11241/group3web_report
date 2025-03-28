@@ -75,7 +75,7 @@ const config = {
           {type: 'doc', docId: 'Testing', label: 'Testing', position: 'left'},
           {type: 'doc', docId: 'Evaluation', label: 'Evaluation', position: 'left'},
           {type: 'doc', docId: 'Appendices', label: 'Appendices', position: 'left'},
-          {href: 'https://www.google.co.uk/', label: 'Blog', position: 'left'},
+          {href: 'https://billowy-elk-9b1.notion.site/HandsUp-Development-Blogs-18169230eb7c80818ff6c78909605f65', label: 'Blog', position: 'left'},
           {
             href: 'https://github.com/mahtanikrish/group3',
             label: 'GitHub',
