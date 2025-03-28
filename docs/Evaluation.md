@@ -24,7 +24,6 @@ title: Evaluation
 
 
 
-
 ### Individual Contribution Table For System Artefacts
 
 | Work packages              | Aishani | Krish | Misha | William |
