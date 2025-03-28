@@ -14,8 +14,7 @@ To solve this problem, we developed HandsUp, a computer vision-based classroom i
 
 | Partner | Website |
 |--------|---------|
-| ![](/img/NAS_Schools_Logo_Sybil_Elgar_RGB.jpg)<br/>**Sybil Elgar School** | [Sybil Elgar School](https://www.autism.org.uk/our-schools/sybil-elgar) |
-| ![](/img/NAS_Schools_Logo_Helen_Allison_RGB.jpg)<br/>**Helen Allison School** | [Helen Allison School](https://www.autism.org.uk/our-schools/sybil-elgar) |
+| ![](/img/NAS_logo.png)<br/>**National Autistic Society** | [NAS](https://www.autism.org.uk/) |
 | ![](/img/intel.jpg)<br/>**Intel** | [Intel](https://www.intel.com/content/www/us/en/homepage.html) |
 | ![](/img/ucl.png)<br/>**UCL Computer Science** | [UCL Computer Science](https://www.ucl.ac.uk/computer-science/) |
 
